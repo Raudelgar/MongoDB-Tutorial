@@ -1,0 +1,148 @@
+MongoDB Cheat Sheet Tutorial
+source > https://www.youtube.com/watch?v=fnPhJHN0jTE
+
+1. Create three folders into MongoDB folder location.
+	data > db
+		>C:\[path]\MongoDB\data\db
+	log	
+	>C:\[path]\MongoDB\log
+	
+2. Open windows command line (cmd) as administrator.
+
+3. Go to the path directory in which MongoDB is installed
+	C:\[path]\MongoDB
+	
+4. Go to bin folder and run the following command:
+	C:\[path]\MongoDB\bin>mongod --directoryperdb --dbpath C:\[path]\MongoDB\data\db --logpath C:\[path]\MongoDB\log\mongo.log --logappend --install
+	--directoryperdb                        //each database will be stored in a separate directory
+	--dbpath [location path]                //specify location for data storage
+	--logpath [location path\file.log]      //specify location for .log file
+	--logappend                             //allow append new lines into file.log
+	--install              					//install windows service
+->Other important commands:
+	>mongod --help		//show a full view of all commands
+	--reinstall			//reinstall windows service 
+	
+5. Start the MongoDB server
+	..\bin>net start MongoDB
+	//should see the following messages after:
+	The MongoDB service is starting...
+	The MongoDB service was started successfully.     
+	//Now is running in the background service 
+	
+6.Run MongoDB through the shell
+	..\bin>mongo
+	
+7. To clean the screen just type:
+	>cls
+	
+8. To exit from the shell: 
+	>ctrl + c
+	
+9. To show databases: 
+	>show dbs
+	
+10. Create a new database: 
+	>use <database name> 
+	//also you switched to <database name>
+	
+11. To check in which database you are: 
+	>db 
+	
+12. Create a user:
+	>db.createUser({
+		user:"name",
+		pwd:"password",
+		roles:["readWrite", "dbAdmin"]
+	});
+	
+13. Create Collections; aka. Tables
+	>db.createCollection("tableName");
+	{"ok":1} //successful messages
+	
+14. To show all collections:
+	>show collections
+	
+15. To insert data into the collection (table):
+	>db.tableName.insert({column1: "item1", column2: "itme2"});
+	writeResult({"nInserted": 1})  //successful messages the one insertion
+	//or if you're going to insert more than one record:
+	>db.tableName.insert([{column1: "item10", column2: "itme20"}, {column1: "item30", column2: "itme40", column3: "item50"}]);
+	//Notes: id is created automatically. New columns could be inserted per specific row, without affecting the table. 
+	
+16. Delete a collection (table):
+	>db.tableName.drop()
+	true  // successful messages 
+	
+17. To show the data insert into collection:
+	>db.tableName.find();
+	//or you can add .pretty() method to make the output more readable
+	>db.customers.find().pretty();
+	
+18. To update any row, or specific field:
+	>db.customers.update({columnName: <value1>},{<all present columns>,newColumnName: <value2>});
+		//if you just write the new field, it will erase the previous columns, so in this way, you should write the entire columns plus the new ones. 
+		//columnName: <value1> is a unique identifier 
+		
+19. To keep the original columns and add new ones without writing all over again:
+		>db.tableName.update({columnName: <value1>},{$set:{newColumnName: <value2>}});
+		//in that way the original columns remain.s 
+		
+20. To increment a value, a number generally:
+	>db.tableName.update({columnName: <value1>},{$inc:{<columnTarget: <how much wants to increase>>}});
+	
+21. To delete a field:
+	>db.tableName.update({columnName: <value1>},{$unset:{columnTarget:1}});
+	
+22. To rename a specific field:
+	>db.tableName.update({columnName: <value1>},{$rename:{"columnTarget":"newcolumnName"}});
+	
+23. To remove a row:
+	>db.tableName.remove({columnName: <value1>});
+	//or if there are more than one with the same value1:
+	>db.tableName.remove({columnName: <value1>},{justOne:true});
+	
+24. MongoDB select statement syntax:
+	>db.tableName.find({columnName: <value1>});
+	>db.tableName.find({$or:[{columnName: <value1>},{columnName: <value2>}]});
+	
+	//other commands:
+	$lt		//less than
+	$gt		//greater than
+	$lte	//less than or equal to
+	$gte	//greater than or equal to 
+	
+	//but in this case should be: 
+	>db.tableName.find({column:{$gt: <value>}}).pretty();
+	
+	//find values from object field:
+	>db.tableName.find({"objectName.property":"value"}).pretty();
+	
+	//find values from array field:
+	>db.tableName.find({arrayName:"value"}).pretty();
+	
+	//to sort the output -> 1 is ascending, -1 is descending
+	>db.tableName.find().sort({columnName: 1}).pretty(); // example ascending
+	
+	//to count how many rows there are:
+	>db.tableName.find().count();
+	#number of rows
+	
+	//to count how many rows there are base on a specific value:
+	>db.tableName.find({columnName: <value>}).count();
+	#number of rows
+	
+	//limit the number of output data:
+	>db.tableName.find().limit(#);  //it will be print out the first # data rows
+	
+	//could limit combining with other methods:
+	>db.tableName.find().limit(#).sort({columnName: 1});  //it will be print out the first # data rows sorted by columnName in ascending
+	
+	//for each loop implementation:
+	>db.tableName.find().forEach(function(doc){print("Customer Name: "+doc.columnName)});
+	//doc  -> is an argument name, could be named as something else
+
+	//function(){}  -> as any regular function in javascript
+	//print()  -> other method 
+	
+	<! Enjoy it :) =>
